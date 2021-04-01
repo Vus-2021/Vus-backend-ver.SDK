@@ -14,7 +14,7 @@ const getUserById = async ({ partitionKey }) => {
     };
     try {
         const data = (await docClient.query(params).promise()).Items;
-        console.log(data);
+
         return { success: true, message: 'getUser', code: 200, data };
     } catch (error) {
         return { success: false, message: error.message, code: 500 };
