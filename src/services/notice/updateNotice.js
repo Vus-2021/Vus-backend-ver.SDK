@@ -1,10 +1,9 @@
+/* eslint-disable no-unused-vars */
 const AWS = require('aws-sdk');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
 const updateNotice = async ({ primaryKey, updateItem }) => {
-    console.log(updateItem);
-
     const ExpressionAttributeNames = Object.entries({
         ...updateItem,
     }).reduce((acc, [key, _]) => {
