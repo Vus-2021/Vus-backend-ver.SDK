@@ -1,18 +1,21 @@
-const dynamoose = require('dynamoose');
 const validParameters = function ({ isMatched, ...args }) {
-    let condition = new dynamoose.Condition();
+    let condition = '';
+    let conditionValue = {};
 
     const existedParameters = Object.entries({ ...args }).filter((value) => value[1] != undefined);
     for (let [key, value] of existedParameters) {
         condition =
             isMatched === true
-                ? condition.where(key).eq(value)
-                : condition.where(key).contains(value);
+                ? condition.concat(` and ${key} = :${key}`)
+                : condition.concat(` and contains(${key}, :${key})`);
+        let obj = {};
+        obj[':' + key] = value;
+        Object.assign(conditionValue, obj);
     }
 
-    if (condition.settings.conditions.length === 0) {
+    if (existedParameters.length === 0) {
         return null;
     }
-    return condition;
+    return [condition, conditionValue];
 };
 module.exports = validParameters;
