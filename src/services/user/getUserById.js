@@ -14,7 +14,7 @@ const getUserById = async ({ partitionKey, sortKey }) => {
         const user = (await docClient.get(params).promise()).Item;
 
         if (!user) {
-            return { success: false, message: 'invalid user', code: 400, user: null };
+            return { success: false, message: '신청 이력이 없습니다.', code: 400, user: null };
         }
         return { success: true, message: 'getUser', code: 200, data: user };
     } catch (error) {
