@@ -3,7 +3,6 @@ const getDetailRoutesByRoute = require('../../../services/route/getDetailRoutesB
 const resolvers = {
     Query: {
         getDetailRoutes: async (_, { route }) => {
-            console.log(1);
             try {
                 const { success, message, code, routeDetails: data } = await getDetailRoutesByRoute(
                     {

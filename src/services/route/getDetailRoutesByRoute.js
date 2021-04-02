@@ -3,12 +3,11 @@ const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
 const getDetailRoutesByRoute = async ({ sortKey, route, index }) => {
-    console.log({ sortKey, route, index });
     const params = {
         TableName: process.env.TABLE_NAME,
         KeyConditionExpression: '#sk = :sk',
         FilterExpression: 'route = :route',
-        IndexName: 'sk-index',
+        IndexName: index,
         ExpressionAttributeNames: {
             '#sk': 'sortKey',
         },
