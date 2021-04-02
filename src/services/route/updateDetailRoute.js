@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
-const updateNotice = async ({ primaryKey, updateItem }) => {
+const updateDetailRoute = async ({ primaryKey, updateItem }) => {
     const ExpressionAttributeNames = Object.entries({
         ...updateItem,
     }).reduce((acc, [key, _]) => {
@@ -35,7 +35,6 @@ const updateNotice = async ({ primaryKey, updateItem }) => {
         ExpressionAttributeNames,
         ExpressionAttributeValues,
     };
-
     try {
         await documentClient.update(params).promise();
         return { success: true, message: 'success update', code: 204 };
@@ -44,4 +43,4 @@ const updateNotice = async ({ primaryKey, updateItem }) => {
     }
 };
 
-module.exports = updateNotice;
+module.exports = updateDetailRoute;
