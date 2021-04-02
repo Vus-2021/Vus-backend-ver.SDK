@@ -17,7 +17,7 @@ const getRouteInfo = async ({ sortKey, gsiSortKey }) => {
     };
     try {
         const result = (await documentClient.query(params).promise()).Items;
-        console.log(result);
+
         if (result.count === 0) {
             return { success: false, message: 'NullValue', code: 200 };
         }
