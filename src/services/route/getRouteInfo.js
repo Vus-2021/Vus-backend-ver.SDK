@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 
-const docClient = new AWS.DynamoDB.DocumentClient();
+const documentClient = new AWS.DynamoDB.DocumentClient();
 
 const getRouteInfo = async ({ sortKey, gsiSortKey }) => {
     const params = {
@@ -16,8 +16,8 @@ const getRouteInfo = async ({ sortKey, gsiSortKey }) => {
         },
     };
     try {
-        const result = (await docClient.query(params).promise()).Items;
-
+        const result = (await documentClient.query(params).promise()).Items;
+        console.log(result);
         if (result.count === 0) {
             return { success: false, message: 'NullValue', code: 200 };
         }
