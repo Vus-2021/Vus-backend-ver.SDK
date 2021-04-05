@@ -21,14 +21,17 @@ const getAdminNotice = async ({ sortKey, index, noticeType, condition }) => {
         };
 
         if (condition) {
-            let [FilterExpression, ExpressionAttributeValues] = condition;
+            let [FilterExpression, ExpressionAttributeValues, ExpressionAttributeNames] = condition;
             params = {
                 TableName: process.env.TABLE_NAME,
                 KeyConditionExpression: '#sk = :sk',
                 FilterExpression: 'noticeType = :noticeType'.concat(FilterExpression),
-                ExpressionAttributeNames: {
-                    '#sk': 'sortKey',
-                },
+                ExpressionAttributeNames: Object.assign(
+                    {
+                        '#sk': 'sortKey',
+                    },
+                    ExpressionAttributeNames
+                ),
                 ExpressionAttributeValues: Object.assign(
                     {
                         ':sk': sortKey,
@@ -40,6 +43,7 @@ const getAdminNotice = async ({ sortKey, index, noticeType, condition }) => {
                 ScanIndexForward: false,
             };
         }
+
         const adminNotice = (await documemntClient.query(params).promise()).Items;
 
         return {
