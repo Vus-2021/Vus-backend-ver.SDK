@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 
-const docClient = new AWS.DynamoDB.DocumentClient();
+const documentClient = new AWS.DynamoDB.DocumentClient();
 
 const getPreviousMonthState = async ({ partitionKey, sortKey }) => {
     const params = {
@@ -11,7 +11,7 @@ const getPreviousMonthState = async ({ partitionKey, sortKey }) => {
         },
     };
     try {
-        const previousApplyData = (await docClient.get(params).promise()).Item;
+        const previousApplyData = (await documentClient.get(params).promise()).Item;
 
         return {
             success: true,

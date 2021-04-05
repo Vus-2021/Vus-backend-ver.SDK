@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 
-const docClient = new AWS.DynamoDB.DocumentClient();
+const documentClient = new AWS.DynamoDB.DocumentClient();
 
 const getUserById = async ({ partitionKey, sortKey }) => {
     try {
@@ -11,7 +11,7 @@ const getUserById = async ({ partitionKey, sortKey }) => {
                 sortKey,
             },
         };
-        const user = (await docClient.get(params).promise()).Item;
+        const user = (await documentClient.get(params).promise()).Item;
 
         if (!user) {
             return { success: false, message: '신청 이력이 없습니다.', code: 400, user: null };

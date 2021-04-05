@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 
-const docClient = new AWS.DynamoDB.DocumentClient();
+const documentClient = new AWS.DynamoDB.DocumentClient();
 
 const signin = async ({ userId, hashedPassword }) => {
     const params = {
@@ -11,7 +11,7 @@ const signin = async ({ userId, hashedPassword }) => {
         },
     };
     try {
-        const user = (await docClient.get(params).promise()).Item;
+        const user = (await documentClient.get(params).promise()).Item;
 
         if (user.password !== hashedPassword) {
             return { success: false, message: 'not matched password', code: 400, user: null };

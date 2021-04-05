@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const AWS = require('aws-sdk');
 
-const docClient = new AWS.DynamoDB.DocumentClient();
+const documentClient = new AWS.DynamoDB.DocumentClient();
 
 const getRouteByUserId = async ({ partitionKey, sortKey }) => {
     const params = {
@@ -12,7 +12,7 @@ const getRouteByUserId = async ({ partitionKey, sortKey }) => {
         },
     };
     try {
-        const result = (await docClient.get(params).promise()).Item;
+        const result = (await documentClient.get(params).promise()).Item;
         if (_.isNil(result)) {
             return { success: false, message: '결과 없음.' };
         }

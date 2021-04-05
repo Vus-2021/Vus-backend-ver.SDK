@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const docClient = new AWS.DynamoDB.DocumentClient();
+const documentClient = new AWS.DynamoDB.DocumentClient();
 
 const getUserById = async ({ partitionKey }) => {
     const params = {
@@ -13,7 +13,7 @@ const getUserById = async ({ partitionKey }) => {
         },
     };
     try {
-        const data = (await docClient.query(params).promise()).Items;
+        const data = (await documentClient.query(params).promise()).Items;
 
         return { success: true, message: 'getUser', code: 200, data };
     } catch (error) {
