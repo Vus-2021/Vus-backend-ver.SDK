@@ -1,5 +1,6 @@
 const createRoute = require('../../../../services/route/createRoute');
 const uuid = require('uuid');
+const uploadS3 = require('../../../../modules/s3');
 
 const resolvers = {
     Mutation: {
@@ -7,17 +8,30 @@ const resolvers = {
             if (!user || user.type !== 'ADMIN') {
                 return { success: false, message: 'access denied', code: 403 };
             }
-            const { busNumber, limitCount, driver, route } = args;
+            const { busNumber, limitCount, driver, route, file } = args;
             try {
+                let routeInfo;
+                if (!file) {
+                    routeInfo = { busNumber, limitCount, driver };
+                } else {
+                    const { createReadStream, filename } = await file;
+                    const fileStream = createReadStream();
+                    const fileInfo = await uploadS3({ fileStream, filename });
+                    routeInfo = {
+                        busNumber,
+                        limitCount,
+                        driver,
+                        imageUrl: fileInfo.Location,
+                    };
+                }
+
                 const [partitionKey, sortKey, gsiSortKey] = [uuid.v4(), '#info', route];
 
                 const { success, message, code } = await createRoute({
                     partitionKey,
                     sortKey,
                     gsiSortKey,
-                    busNumber,
-                    limitCount,
-                    driver,
+                    routeInfo,
                 });
 
                 return { success, message, code };

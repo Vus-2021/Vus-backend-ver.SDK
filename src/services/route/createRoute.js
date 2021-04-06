@@ -2,23 +2,14 @@ const AWS = require('aws-sdk');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
-const createRoute = async ({
-    partitionKey,
-    sortKey,
-    gsiSortKey,
-    busNumber,
-    limitCount,
-    driver,
-}) => {
+const createRoute = async ({ partitionKey, sortKey, gsiSortKey, routeInfo }) => {
     const params = {
         TableName: process.env.TABLE_NAME,
         Item: {
             partitionKey,
             sortKey,
             gsiSortKey,
-            busNumber,
-            limitCount,
-            driver,
+            ...routeInfo,
         },
     };
     try {

@@ -16,5 +16,6 @@ type Mutation {
         busNumber: String!
         limitCount: Int!
         driver: driver!
+        file: Upload
     ): createRouteResponse
 }

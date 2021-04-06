@@ -18,6 +18,7 @@ type RouteInfo {
     limitCount: Int
     driver: driverInfo
     month: monthInfo
+    imageUrl: String
 }
 
 type driverInfo {

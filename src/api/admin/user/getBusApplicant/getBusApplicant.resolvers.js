@@ -37,6 +37,7 @@ const resolvers = {
                         route: info.gsiSortKey,
                         previousMonthState: info.previousMonthState,
                         state: info.state,
+                        isCancellation: info.isCancellation,
                     });
                 });
 
