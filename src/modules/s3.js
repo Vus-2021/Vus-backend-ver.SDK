@@ -8,20 +8,26 @@ const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
 });
 
-module.exports.uploadS3 = async (fileStream) => {
+const uploadS3 = ({ fileStream, filename }) => {
     const params = {
         Bucket: 'test-vus',
-        key: function (req, file, cb) {
-            cb(null, 'images/origin/' + Date.now() + '.' + file.originalname.split('.').pop());
-        },
+        Key: `images/origin/${Date.now()}.${filename.split('.').pop()}`,
         Body: fileStream,
         ACL: 'public-read',
     };
 
-    try {
-        const response = await s3.upload(params).promise();
-        console.log(response);
-    } catch (error) {
-        console.log(error);
-    }
+    const fileInfo = s3
+        .upload(params)
+        .promise()
+        .then((data) => {
+            return data;
+        })
+        .catch((err) => {
+            console.log(err);
+            throw err;
+        });
+
+    return fileInfo;
 };
+
+module.exports = uploadS3;
