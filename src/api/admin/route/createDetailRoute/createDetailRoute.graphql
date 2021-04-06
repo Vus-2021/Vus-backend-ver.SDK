@@ -2,10 +2,10 @@ type Mutation {
     createRouteDetail(
         route: String!
         location: String!
-        imageUrl: String
         lat: Float!
         long: Float!
         boardingTime: String!
+        file: Upload
     ): createRouteDetailResponse
 }
 

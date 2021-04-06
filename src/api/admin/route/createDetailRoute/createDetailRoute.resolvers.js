@@ -1,23 +1,35 @@
 const uuid = require('uuid');
 
 const createRouteDetail = require('../../../../services/route/createRouteDetail');
-/**
- * TODO 토큰 적용하면 ADMIN만 Route를 생성 가능하게!
- */
+const uploadS3 = require('../../../../modules/s3');
 const resolvers = {
     Mutation: {
         createRouteDetail: async (_, args, { user }) => {
             if (!user || user.type !== 'ADMIN') {
                 return { success: false, message: 'access denied', code: 403 };
             }
-            const { location, route, imageUrl, lat, long, boardingTime } = args;
+            const { location, route, lat, long, boardingTime, file } = args;
             try {
                 const [partitionKey, sortKey, gsiSortKey] = [
                     uuid.v4(),
                     '#detail',
                     `#boardingTime#${boardingTime}`,
                 ];
-                const routeDetail = { location, route, imageUrl, lat, long };
+                let routeDetail;
+                if (!file) {
+                    routeDetail = { location, route, lat, long };
+                } else {
+                    const { createReadStream, filename } = await file;
+                    const fileStream = createReadStream();
+                    const fileInfo = await uploadS3({ fileStream, filename });
+                    routeDetail = {
+                        location,
+                        route,
+                        lat,
+                        long,
+                        imageUrl: fileInfo.Location,
+                    };
+                }
 
                 const { success, message, code } = await createRouteDetail({
                     partitionKey,
