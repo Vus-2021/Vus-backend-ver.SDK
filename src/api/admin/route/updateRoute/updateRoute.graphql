@@ -1,0 +1,15 @@
+type Mutation {
+    updateRoute(
+        partitionKey: String!
+        route: String
+        busNumber: String
+        limitCount: Int
+        driver: driver
+    ): updateRouteResponse
+}
+
+type updateRouteResponse implements Response {
+    success: Boolean!
+    message: String!
+    code: Int
+}
