@@ -1,5 +1,9 @@
-const deleteRoute = require('../../../../services/route/deleteRoute');
+const deleteRouteAndDetails = require('../../../../services/route/deleteRouteAndDetails');
 const getBusInfo = require('../../../../services/route/getBusInfoBybusId');
+const getDetailRoutesByRoute = require('../../../../services/route/getDetailRoutesByRoute');
+/**
+ * TODO onDelete
+ */
 
 const resolvers = {
     Mutation: {
@@ -13,8 +17,22 @@ const resolvers = {
                 if (data.count === 0) {
                     return { success: false, message: 'invalide Route Id', code: 400 };
                 }
-
-                ({ success, message, code } = await deleteRoute({ partitionKey, sortKey }));
+                const route = data[0].gsiSortKey;
+                ({ success, message, code, routeDetails: data } = await getDetailRoutesByRoute({
+                    sortKey: '#detail',
+                    route: route,
+                    index: 'sk-index',
+                }));
+                const detailList = data.map((item) => {
+                    return {
+                        partitionKey: item.partitionKey,
+                        sortKey: '#detail',
+                    };
+                });
+                ({ success, message, code } = await deleteRouteAndDetails({
+                    detailList,
+                    routeInfo: { partitionKey, sortKey },
+                }));
                 return { success, message, code };
             } catch (error) {
                 return { success: false, message: error.message, code: 500 };
