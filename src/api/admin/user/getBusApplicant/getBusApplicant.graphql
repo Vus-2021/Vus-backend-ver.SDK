@@ -6,6 +6,7 @@ type Query {
         name: String
         userId: String
         type: UserType
+        isCancellation: Boolean
     ): getBusApplicantResponse
 }
 

@@ -3,14 +3,18 @@ const dayjs = require('dayjs');
 const searchValidator = require('../../../../modules/searchValidator');
 const getBusApplicant = require('../../../../services/user/getBusApplicant');
 const getUserById = require('../../../../services/user/getUserById');
+const boolValidParameters = require('../../../../modules/boolValidator');
 
+/**
+ * TODO boolValidator 수정하기.
+ */
 const resolvers = {
     Query: {
         getBusApplicant: async (parent, args, { user }) => {
             if (!user || user.type !== 'ADMIN') {
                 return { success: false, message: 'access denied', code: 403 };
             }
-            const { isMatched, gsiSortKey, name, month, state, userId, type } = {
+            const { isMatched, gsiSortKey, name, month, state, userId, type, isCancellation } = {
                 isMatched: args.isMatched || false,
                 gsiSortKey: args.route || '강남',
                 name: args.name,
@@ -18,9 +22,11 @@ const resolvers = {
                 state: args.state,
                 userId: args.userId,
                 type: args.type,
+                isCancellation: args.isCancellation,
             };
 
             let condition = searchValidator({ isMatched, state, partitionKey: userId });
+            condition = boolValidParameters({ condition, isCancellation });
             try {
                 const { success, message, code, data: monthResult } = await getBusApplicant({
                     sortKey: `#applyRoute#${month}`,

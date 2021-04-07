@@ -1,6 +1,6 @@
 input driver {
     name: String
-    image: String
+    userId: String
     phone: String
 }
 

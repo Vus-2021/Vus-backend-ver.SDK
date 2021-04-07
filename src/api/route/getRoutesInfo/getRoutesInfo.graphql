@@ -23,7 +23,7 @@ type RouteInfo {
 
 type driverInfo {
     phone: String
-    image: String
+    userId: String
     name: String
 }
 
