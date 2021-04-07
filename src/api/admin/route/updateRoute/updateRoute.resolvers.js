@@ -1,9 +1,8 @@
-const updateDetailRoute = require('../../../../services/route/updateDetailRoute');
+const updateRouteInfoDetail = require('../../../../services/route/updateRouteInfoDetail');
+const getDetailRoutesByRoute = require('../../../../services/route/getDetailRoutesByRoute');
+const getRouteById = require('../../../../services/route/getRouteById');
 const uploadS3 = require('../../../../modules/s3');
 
-/**
- * TODO onDelete ..
- */
 const resolvers = {
     Mutation: {
         updateRoute: async (
@@ -16,19 +15,40 @@ const resolvers = {
             }
 
             let updateItem;
+            updateItem = { gsiSortKey: route, busNumber, limitCount, driver };
 
             try {
-                if (!file) {
-                    updateItem = { route, busNumber, limitCount, driver };
-                } else {
+                const thisRoute = (await getRouteById({ partitionKey, sortKey: '#info' })).route;
+                let detailList;
+                if (route !== thisRoute.gsiSortKey) {
+                    const details = await getDetailRoutesByRoute({
+                        sortKey: '#detail',
+                        route: thisRoute.gsiSortKey,
+                        index: 'sk-index',
+                    });
+                    detailList = details.routeDetails.map((item) => {
+                        return {
+                            partitionKey: item.partitionKey,
+                            sortKey: '#detail',
+                            route: route,
+                            gsiSortKey: item.gsiSortKey,
+                            location: item.location,
+                            lat: item.lat,
+                            long: item.long,
+                        };
+                    });
+                }
+                if (file) {
                     const { createReadStream, filename } = await file;
                     const fileStream = createReadStream();
                     const fileInfo = await uploadS3({ fileStream, filename });
                     updateItem = Object.assign(updateItem, { imageUrl: fileInfo.Location });
                 }
-                const { success, message, code } = await updateDetailRoute({
+
+                const { success, message, code } = await updateRouteInfoDetail({
                     primaryKey: { partitionKey, sortKey: '#info' },
                     updateItem,
+                    detailList,
                 });
 
                 return { success, message, code };

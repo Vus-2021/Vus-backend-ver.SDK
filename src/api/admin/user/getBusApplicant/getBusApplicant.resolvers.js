@@ -5,9 +5,6 @@ const getBusApplicant = require('../../../../services/user/getBusApplicant');
 const getUserById = require('../../../../services/user/getUserById');
 const boolValidParameters = require('../../../../modules/boolValidator');
 
-/**
- * TODO boolValidator 수정하기.
- */
 const resolvers = {
     Query: {
         getBusApplicant: async (parent, args, { user }) => {

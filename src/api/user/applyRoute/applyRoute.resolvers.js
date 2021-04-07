@@ -6,9 +6,6 @@ const getApplyRouteByUserId = require('../../../services/route/getApplyRouteByUs
 const getRouteInfo = require('../../../services/route/getRouteInfo');
 const getPreviousMonthState = require('../../../services/user/getPreviousMonthState');
 
-/**
- * TODO Token
- */
 const resolvers = {
     Mutation: {
         applyRoute: async (parent, { route, month, partitionKey }, { user }) => {

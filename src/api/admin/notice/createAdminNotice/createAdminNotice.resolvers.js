@@ -1,9 +1,7 @@
 const createNotice = require('../../../../services/notice/createNotice');
 const dateNow = require('../../../../modules/dateNow');
 const uuid = require('uuid');
-/**
- * TODO auth => only Admin
- */
+
 const resolvers = {
     Mutation: {
         createAdminNotice: async (_, { noticeType, notice, content }, { user }) => {

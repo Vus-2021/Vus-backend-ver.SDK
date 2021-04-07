@@ -1,9 +1,6 @@
 const AWS = require('aws-sdk');
-
 const DocumentClient = new AWS.DynamoDB.DocumentClient();
-/**
- * TODO Transaction mock데이터 수정해주기 동작은 잘됨!
- */
+
 const applyRoute = async ({ userApplyData, busInfo }) => {
     const transactItems = [
         {
