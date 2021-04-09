@@ -6,24 +6,35 @@ const resolvers = {
             if (!context.user) return { success: false, message: context.message, code: 400 };
             try {
                 let { data } = await getUserByPk({ partitionKey: context.user.userId });
-
-                data = data
-                    .filter((item) => {
-                        return (
-                            (item.state === 'pending' || item.state === 'fulfilled') &&
-                            !item.isCancellation &&
-                            item.sortKey !== '#user'
-                        );
-                    })
-                    .map((dataItem) => {
-                        return {
-                            partitionKey: dataItem.partitionKey,
-                            sortKey: dataItem.sortKey,
-                            routes: dataItem.gsiSortKey,
-                            busId: dataItem.busId,
-                            month: dataItem.sortKey.split('#')[2],
-                        };
-                    });
+                if (context.user.type === 'DRIVER') {
+                    data = data
+                        .filter((item) => {
+                            return item.sortKey === '#driver';
+                        })
+                        .map((item) => {
+                            return Object.assign(item, {
+                                route: item.gsiSortKey,
+                            });
+                        });
+                } else {
+                    data = data
+                        .filter((item) => {
+                            return (
+                                (item.state === 'pending' || item.state === 'fulfilled') &&
+                                !item.isCancellation &&
+                                item.sortKey !== '#user'
+                            );
+                        })
+                        .map((dataItem) => {
+                            return {
+                                partitionKey: dataItem.partitionKey,
+                                sortKey: dataItem.sortKey,
+                                route: dataItem.gsiSortKey,
+                                busId: dataItem.busId,
+                                month: dataItem.sortKey.split('#')[2],
+                            };
+                        });
+                }
                 const obj = context.user;
                 obj.routeInfo = data;
 

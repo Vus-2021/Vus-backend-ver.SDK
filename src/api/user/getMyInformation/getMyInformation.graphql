@@ -1,5 +1,5 @@
 type applyRoutesInfo {
-    routes: String
+    route: String
     month: String
     busId: String
 }
