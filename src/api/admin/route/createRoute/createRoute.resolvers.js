@@ -9,6 +9,7 @@ const resolvers = {
                 return { success: false, message: 'access denied', code: 403 };
             }
             const { busNumber, limitCount, driver, route, file } = args;
+            const [partitionKey, sortKey, gsiSortKey] = [uuid.v4(), '#info', route];
             try {
                 let routeInfo;
                 if (!file) {
@@ -24,14 +25,18 @@ const resolvers = {
                         imageUrl: fileInfo.Location,
                     };
                 }
-
-                const [partitionKey, sortKey, gsiSortKey] = [uuid.v4(), '#info', route];
-
-                const { success, message, code } = await createRoute({
+                const createItem = {
                     partitionKey,
                     sortKey,
                     gsiSortKey,
-                    routeInfo,
+                    ...routeInfo,
+                };
+
+                const driverPk = { partitionKey: driver.userId, sortKey: '#driver' };
+
+                const { success, message, code } = await createRoute({
+                    createItem,
+                    driverPk,
                 });
 
                 return { success, message, code };

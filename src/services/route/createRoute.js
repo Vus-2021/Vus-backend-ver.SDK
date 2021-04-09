@@ -2,19 +2,32 @@ const AWS = require('aws-sdk');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
-const createRoute = async ({ partitionKey, sortKey, gsiSortKey, routeInfo }) => {
-    const params = {
-        TableName: process.env.TABLE_NAME,
-        Item: {
-            partitionKey,
-            sortKey,
-            gsiSortKey,
-            ...routeInfo,
+const createRoute = async ({ createItem, driverPK }) => {
+    const transactItems = [
+        {
+            Put: {
+                TableName: process.env.TABLE_NAME,
+                Item: createItem,
+            },
         },
-    };
+        {
+            Update: {
+                TableName: process.env.TABLE_NAME,
+                Key: driverPK,
+                UpdateExpression: 'SET busId = :busId and gsiSortKey = :gsiSortKey',
+                ExpressionAttributeValues: {
+                    ':busId': createItem.partitonKey,
+                    ':gsiSortKey': createItem.gsiSortKey,
+                },
+            },
+        },
+    ];
     try {
-        await documentClient.put(params).promise();
-        return { success: true, message: 'success crete Route' };
+        await documentClient
+            .transactWrite({
+                TransactItems: transactItems,
+            })
+            .promise();
     } catch (error) {
         return { success: false, message: error.message };
     }
