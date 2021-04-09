@@ -2,8 +2,9 @@ const AWS = require('aws-sdk');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
-const getDetailRoutesByRoute = async ({ sortKey, route, index }) => {
-    const params = {
+const getDetailRoutesByRoute = async ({ sortKey, route, index, condition }) => {
+    let params;
+    params = {
         TableName: process.env.TABLE_NAME,
         KeyConditionExpression: '#sk = :sk',
         FilterExpression: 'route = :route',
@@ -17,6 +18,30 @@ const getDetailRoutesByRoute = async ({ sortKey, route, index }) => {
         },
         ScanIndexForward: true,
     };
+
+    if (condition) {
+        let [FilterExpression, ExpressionAttributeValues, ExpressionAttributeNames] = condition;
+        params = {
+            TableName: process.env.TABLE_NAME,
+            KeyConditionExpression: '#sk = :sk',
+            FilterExpression: 'route = :route'.concat(FilterExpression),
+            ExpressionAttributeNames: Object.assign(
+                {
+                    '#sk': 'sortKey',
+                },
+                ExpressionAttributeNames
+            ),
+            ExpressionAttributeValues: Object.assign(
+                {
+                    ':sk': sortKey,
+                    ':route': route,
+                },
+                ExpressionAttributeValues
+            ),
+            IndexName: index,
+            ScanIndexForward: true,
+        };
+    }
 
     try {
         const routeDetails = (await documentClient.query(params).promise()).Items;
