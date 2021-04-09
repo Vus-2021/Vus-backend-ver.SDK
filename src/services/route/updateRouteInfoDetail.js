@@ -2,7 +2,7 @@
 const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
-const updateDetailRoute = async ({ primaryKey, updateItem, detailList }) => {
+const updateDetailRoute = async ({ primaryKey, updateItem, detailList, userPk }) => {
     const TableName = process.env.TABLE_NAME;
     let ExpressionAttributeNames = Object.entries({
         ...updateItem,
@@ -35,6 +35,21 @@ const updateDetailRoute = async ({ primaryKey, updateItem, detailList }) => {
                 UpdateExpression,
                 ExpressionAttributeNames,
                 ExpressionAttributeValues,
+            },
+        },
+        {
+            Update: {
+                TableName,
+                Key: userPk,
+                UpdateExpression: 'SET #busId = :busId and #gsiSortKey = :gsiSortKey',
+                ExpressionAttributeNames: {
+                    '#busId': ':busId',
+                    '#gsiSortKey': ':gsiSortKey',
+                },
+                ExpressionAttributeValues: {
+                    ':busId': primaryKey.partitionKey,
+                    ':gsiSortKey': updateItem.gsiSortKey,
+                },
             },
         },
     ];

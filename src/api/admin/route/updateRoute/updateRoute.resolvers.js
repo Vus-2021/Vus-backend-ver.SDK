@@ -45,10 +45,12 @@ const resolvers = {
                     updateItem = Object.assign(updateItem, { imageUrl: fileInfo.Location });
                 }
 
+                const userPk = { partitionKey: driver.userId, sortKey: '#driver' };
                 const { success, message, code } = await updateRouteInfoDetail({
                     primaryKey: { partitionKey, sortKey: '#info' },
                     updateItem,
                     detailList,
+                    userPk,
                 });
 
                 return { success, message, code };
